@@ -69,6 +69,7 @@ def save_link(message, bot_message):
 
 
 def keyboard_send(admin_cid):
+    button0 = telegram.KeyboardButton(text='/daily_stat')
     button1 = telegram.KeyboardButton(text='/show_friend')
     button2 = telegram.KeyboardButton(text='/show_claimants')
     button3 = telegram.KeyboardButton(text='/test')
@@ -77,7 +78,7 @@ def keyboard_send(admin_cid):
     button6 = telegram.KeyboardButton(text='/refresh_friend')
     button7 = telegram.KeyboardButton(text='/add_claimant')
     button8 = telegram.KeyboardButton(text='/delete_claimant')
-    mes = telegram.ReplyKeyboardMarkup(keyboard=[[button1], [button2],
+    mes = telegram.ReplyKeyboardMarkup(keyboard=[[button0], [button1], [button2],
                                                  [button3], [button4],
                                                  [button5], [button6],
                                                  [button7], [button8]],
