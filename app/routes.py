@@ -246,6 +246,10 @@ def respond(update):
             cmd = text.split()[0]
 
             if cmd == 'start':
+                a = Admin.query.first()
+                if a:
+                    Admin.query.delete()
+                    db.session.commit()
                 a = Admin(name=app.config['ADMIN'], chat_id=message.chat.id)
                 db.session.add(a)
                 db.session.commit()
