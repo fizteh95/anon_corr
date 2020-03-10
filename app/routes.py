@@ -240,7 +240,8 @@ def respond(update):
     try:
         if (message.from_user.username == app.config['ADMIN']) and\
                 (message.text) and\
-                (message.text.encode('utf-8').decode()[0] == '/'):
+                ((message.text.encode('utf-8').decode()[0] == '/') or\
+                 admin_exec.state == 1):
             text = message.text.encode('utf-8').decode()[1:]
             cmd = text.split()[0]
 
