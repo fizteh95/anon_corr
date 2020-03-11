@@ -179,6 +179,7 @@ def make_cmd(cmd=None, name=None):
         if b:
             app.logger.info(f'{b.name}')
             b.delete()
+            db.session.commit()
         # Claimant.query.filter_by(name=str(name).lower()).first().delete()
         need_update = True
 
