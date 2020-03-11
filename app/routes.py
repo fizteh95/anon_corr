@@ -244,7 +244,7 @@ def respond(update):
 
     # админская часть
     try:
-        if (str(message.from_user.username).lower() == app.config['ADMIN']) and\
+        if (str(message.from_user.username).lower() == str(app.config['ADMIN']).lower()) and\
                 (message.text) and\
                 ((message.text.encode('utf-8').decode()[0] == '/') or\
                  admin_exec.state == 1):
@@ -260,6 +260,7 @@ def respond(update):
                 db.session.add(a)
                 db.session.commit()
 
+                bot.sendMessage(chat_id=message.chat.id, text='Start!')
                 keyboard_send(message.chat.id)
                 # bot.sendMessage(chat_id=message.chat.id, text='Start!')
                 return 'ok'
@@ -451,7 +452,7 @@ def test_scheduler():
     if offset == 0:
         updates = bot.getUpdates()
     else:
-        updates = bot.getUpdates(offset=(offset + 1), timeout=4)
+        updates = bot.getUpdates(offset=(offset + 1), timeout=2)
     for update in updates:
         offset = update.update_id
         try:
@@ -463,6 +464,6 @@ def test_scheduler():
 
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(test_scheduler, 'interval', seconds=5)
+scheduler.add_job(test_scheduler, 'interval', seconds=3)
 scheduler.start()
 app.logger.info(f'Scheduler started!')
