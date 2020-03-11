@@ -468,6 +468,6 @@ def test_scheduler():
 
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(test_scheduler, 'interval', seconds=3)
+scheduler.add_job(test_scheduler, 'interval', seconds=5)
 scheduler.start()
 app.logger.info(f'Scheduler started!')
