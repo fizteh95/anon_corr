@@ -174,6 +174,9 @@ def make_cmd(cmd=None, name=None):
 
     elif (cmd == 'delete_claimant') and name:
         app.logger.info(f'Deleting claimant...')
+        b = Claimant.query.filter_by(name=str(name).lower())
+        if b:
+            app.logger.info(f'{b.name}')
         Claimant.query.filter_by(name=str(name).lower()).delete()
         need_update = True
 
