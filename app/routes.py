@@ -175,12 +175,12 @@ def make_cmd(cmd=None, name=None):
     elif (cmd == 'delete_claimant') and name:
         app.logger.info(f'Deleting claimant...')
         app.logger.info(f'{name}')
-        b = Claimant.query.filter_by(name=str(name).lower()).first()
-        if b:
-            app.logger.info(f'{b.name}')
-            b.delete()
-            db.session.commit()
-        # Claimant.query.filter_by(name=str(name).lower()).first().delete()
+        # b = Claimant.query.filter_by(name=str(name).lower()).first()
+        # if b:
+        #     app.logger.info(f'{b.name}')
+        #     b.delete()
+        #     db.session.commit()
+        Claimant.query.filter_by(name=str(name).lower()).first().delete()
         need_update = True
 
     elif cmd == 'daily_stat':
@@ -451,7 +451,7 @@ def test_scheduler():
     if offset == 0:
         updates = bot.getUpdates()
     else:
-        updates = bot.getUpdates(offset=(offset + 1), timeout=9)
+        updates = bot.getUpdates(offset=(offset + 1), timeout=2)
     for update in updates:
         offset = update.update_id
         try:
@@ -463,6 +463,6 @@ def test_scheduler():
 
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(test_scheduler, 'interval', seconds=10)
+scheduler.add_job(test_scheduler, 'interval', seconds=3)
 scheduler.start()
 app.logger.info(f'Scheduler started!')
