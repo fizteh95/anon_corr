@@ -62,7 +62,7 @@ def save_link(message, bot_message):
     link = Link(from_chat_id=message.chat.id,
                 source_message_id=message.message_id,
                 current_message_id=bot_message.message_id,
-                claimant=message.from_user.username)
+                claimant=str(message.from_user.username).lower())
 
     db.session.add(link)
     db.session.commit()
@@ -127,13 +127,13 @@ def make_cmd(cmd=None, name=None):
         if f:
             Friend.query.delete()
             db.session.commit()
-        r = Friend(name=name)
+        r = Friend(name=str(name).lower())
         db.session.add(r)
         need_update = True
 
     elif (cmd == 'add_claimant') and name:
         app.logger.info(f'Adding claimant...')
-        r = Claimant(name=name)
+        r = Claimant(name=str(name).lower())
         db.session.add(r)
         need_update = True
 
@@ -174,7 +174,7 @@ def make_cmd(cmd=None, name=None):
 
     elif (cmd == 'delete_claimant') and name:
         app.logger.info(f'Deleting claimant...')
-        Claimant.query.filter_by(name=name).delete()
+        Claimant.query.filter_by(name=str(name).lower()).delete()
         need_update = True
 
     elif cmd == 'daily_stat':
@@ -238,7 +238,7 @@ def respond(update):
 
     # админская часть
     try:
-        if (message.from_user.username == app.config['ADMIN']) and\
+        if (str(message.from_user.username).lower() == app.config['ADMIN']) and\
                 (message.text) and\
                 ((message.text.encode('utf-8').decode()[0] == '/') or\
                  admin_exec.state == 1):
@@ -250,7 +250,7 @@ def respond(update):
                 if a:
                     Admin.query.delete()
                     db.session.commit()
-                a = Admin(name=app.config['ADMIN'], chat_id=message.chat.id)
+                a = Admin(name=str(app.config['ADMIN']).lower(), chat_id=message.chat.id)
                 db.session.add(a)
                 db.session.commit()
 
@@ -277,7 +277,7 @@ def respond(update):
 
     # вытаскиваем имена взыскателей
     claimants_raw = Claimant.query.all()
-    claimants = [x.name for x in claimants_raw]
+    claimants = [str(x.name).lower() for x in claimants_raw]
 
     # вытаскивем имя друга
     friend = Friend.query.first()
@@ -286,16 +286,19 @@ def respond(update):
 
     try:
         # выясняем кому сообщение
-        if message.from_user.username in claimants:
-            to_user = friend.name
+        if str(message.from_user.username).lower() in claimants:
+            to_user = str(friend.name).lower()
             from_claimant = True
         else:
             link = Link.query.filter_by(
                 current_message_id=message.reply_to_message.message_id).first()
-            to_user = link.claimant
+            to_user = str(link.claimant).lower()
             from_claimant = False
     # если друг решил отправить сообщение в никуда
     except Exception as e:
+        friend = Friend.query.first()
+        if friend and (str(message.from_user.username).lower() == str(friend.name).lower()):
+            bot.sendMessage(chat_id=message.chat.id, text='Сообщение не доставлено. Нужно выбрать входящее сообщение, на которое отвечаете. Только так ответ будет доставлен нужному адресату.')
         app.logger.warning(f'error: {e}')
         to_user = None
         from_claimant = False
@@ -335,8 +338,8 @@ def respond(update):
                     tlg_msg_id=message.message_id,
                     text=t_b,
                     media_group_id=message.media_group_id,
-                    from_user=message.from_user.username,
-                    to_user=to_user,
+                    from_user=str(message.from_user.username).lower(),
+                    to_user=str(to_user).lower(),
                     file_ids=file_id,
                     from_claimant=from_claimant)
 
@@ -388,7 +391,7 @@ def respond(update):
         return 'ok'
 
     # если сообщение от друга и с пересылкой
-    if (message.from_user.username == friend.name) and\
+    if (str(message.from_user.username).lower() == str(friend.name).lower()) and\
             (message.reply_to_message is not None):
 
         cl_chat_id_raw = Link.query\
@@ -411,13 +414,13 @@ def respond(update):
             bot.sendMessage(chat_id=admin_cid, text='error...')
 
     # если сообщение от друга без пересылки и не сохранен айдишник чата
-    elif (message.from_user.username == friend.name) and (not friend.chat_id):
+    elif (str(message.from_user.username).lower() == str(friend.name).lower()) and (not friend.chat_id):
         friend.chat_id = message.chat.id
         db.session.commit()
         bot.sendMessage(chat_id=message.chat.id, text='Все готово!')
 
     # если сообщение от взыскателя
-    elif (message.from_user.username in claimants):  # and\
+    elif (str(message.from_user.username).lower() in claimants):  # and\
         # (not message.media_group_id):
         general_send(message, need_save=True, chat_id=friend.chat_id)
     else:
