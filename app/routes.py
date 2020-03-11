@@ -104,8 +104,12 @@ class AdminExec:
                     keyboard_send(admin_cid)
                 else:
                     self.state = 1
-                    bot.sendMessage(chat_id=admin_cid,
-                                    text='Введите юзернейм пользователя.')
+                    if (self.command == 'refresh_friend'):
+                        bot.sendMessage(chat_id=admin_cid,
+                                        text='Напоминаю, что старый юзернейм друга перезапишется новым. Введите, пожалуйста, новый юзернейм пользователя.')
+                    else:
+                        bot.sendMessage(chat_id=admin_cid,
+                                        text='Введите юзернейм пользователя.')
         else:
             self.state = 0
             make_cmd(cmd=self.command, name=val)
@@ -304,9 +308,9 @@ def respond(update):
     # если друг решил отправить сообщение в никуда
     except Exception as e:
         friend = Friend.query.first()
-        if friend and (str(message.from_user.username).lower() == str(friend.name).lower()):
+        if friend and (str(message.from_user.username).lower() == str(friend.name).lower()) and (friend.chat_id):
             bot.sendMessage(chat_id=message.chat.id, text='Сообщение не доставлено. Нужно выбрать входящее сообщение, на которое отвечаете. Только так ответ будет доставлен нужному адресату.')
-        app.logger.warning(f'error: {e}')
+        app.logger.warning(f'to-whom error: {e}')
         to_user = None
         from_claimant = False
 
@@ -450,7 +454,7 @@ def test_scheduler():
     print("Polling...")
     print(time.time())
     if offset == 0:
-        updates = bot.getUpdates()
+        updates = bot.getUpdates(timeout=2)
     else:
         updates = bot.getUpdates(offset=(offset + 1), timeout=2)
     for update in updates:
