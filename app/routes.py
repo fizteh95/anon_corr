@@ -451,7 +451,7 @@ def test_scheduler():
     if offset == 0:
         updates = bot.getUpdates()
     else:
-        updates = bot.getUpdates(offset=(offset + 1), timeout=2)
+        updates = bot.getUpdates(offset=(offset + 1), timeout=4)
     for update in updates:
         offset = update.update_id
         try:
@@ -463,6 +463,6 @@ def test_scheduler():
 
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(test_scheduler, 'interval', seconds=3)
+scheduler.add_job(test_scheduler, 'interval', seconds=5)
 scheduler.start()
 app.logger.info(f'Scheduler started!')
