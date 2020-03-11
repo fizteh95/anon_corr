@@ -175,10 +175,10 @@ def make_cmd(cmd=None, name=None):
     elif (cmd == 'delete_claimant') and name:
         app.logger.info(f'Deleting claimant...')
         app.logger.info(f'{name}')
-        b = Claimant.query.filter_by(name=str(name).lower()).first()
+        b = Claimant.query.filter_by(name=(name).lower()).first()
         if b:
             app.logger.info(f'{b.name}')
-        Claimant.query.filter_by(name=str(name).lower()).delete()
+        Claimant.query.filter_by(name=str(name).lower()).first().delete()
         need_update = True
 
     elif cmd == 'daily_stat':
