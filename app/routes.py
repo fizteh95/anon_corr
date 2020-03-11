@@ -104,7 +104,7 @@ class AdminExec:
                     keyboard_send(admin_cid)
                 else:
                     self.state = 1
-                    if (self.command == 'refresh_friend'):
+                    if (self.command == 'refresh_friend') and (Friend.query.first()):
                         bot.sendMessage(chat_id=admin_cid,
                                         text='Напоминаю, что старый юзернейм друга перезапишется новым. Введите, пожалуйста, новый юзернейм пользователя.')
                     else:
