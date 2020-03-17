@@ -153,7 +153,7 @@ def make_cmd(cmd=None, name=None):
         if friend:
             text = friend.name
         else:
-            text = 'Друг не настроен.'
+            text = 'No friend'
         bot.sendMessage(chat_id=admin_cid, text=text)
 
     elif cmd == 'показать_взыскателей':
@@ -162,7 +162,7 @@ def make_cmd(cmd=None, name=None):
         if cs:
             bot.sendMessage(chat_id=admin_cid, text=(', '.join(cs)))
         else:
-            bot.sendMessage(chat_id=admin_cid, text='Нет взыскателей.')
+            bot.sendMessage(chat_id=admin_cid, text='No claimants')
 
     elif cmd == 'help':
         bot.sendMessage(chat_id=admin_cid, text='''Для настройки бота надо:
@@ -241,7 +241,11 @@ def make_cmd(cmd=None, name=None):
         claimants = Claimant.query.all()
         claimants = [str(cl.name).lower() for cl in claimants]
         for cl in claimants:
-            resp += f'  {cl}: {Message.query.filter(Message.from_user == cl).count()} сообщений.'
+            base_query = Message.query.filter(Message.from_user == cl)
+            resp += f'  {cl}: {base_query.filter(Message.timestamp >= datetime(b.year, b.month, b.day)).count()} за день,\
+            {base_query.filter(Message.timestamp >= (b - timedelta(days=1))).count()} за сутки,\
+            {base_query.filter(Message.timestamp >= (datetime(b.year, b.month, b.day)) - timedelta(days=7)).count()} за неделю,\
+            {base_query.count()} сообщений всего.\n'
 
         bot.sendMessage(chat_id=admin_cid, text=resp)
     else:
