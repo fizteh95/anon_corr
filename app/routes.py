@@ -69,14 +69,14 @@ def save_link(message, bot_message):
 
 
 def keyboard_send(admin_cid):
-    button1 = telegram.KeyboardButton(text='/show_friend')
-    button2 = telegram.KeyboardButton(text='/show_claimants')
-    button3 = telegram.KeyboardButton(text='/test')
-    button4 = telegram.KeyboardButton(text='/delete_all')
-    button5 = telegram.KeyboardButton(text='/daily_stat')
-    button6 = telegram.KeyboardButton(text='/refresh_friend')
-    button7 = telegram.KeyboardButton(text='/add_claimant')
-    button8 = telegram.KeyboardButton(text='/delete_claimant')
+    button3 = telegram.KeyboardButton(text='/показать_друга')
+    button2 = telegram.KeyboardButton(text='/показать_взыскателей')
+    button1 = telegram.KeyboardButton(text='/help')
+    button8 = telegram.KeyboardButton(text='/удалить_всех')
+    button4 = telegram.KeyboardButton(text='/статистика')
+    button6 = telegram.KeyboardButton(text='/обновить_друга')
+    button7 = telegram.KeyboardButton(text='/добавить_взыскателя')
+    button5 = telegram.KeyboardButton(text='/удалить_взыскателя')
     mes = telegram.ReplyKeyboardMarkup(keyboard=[[button1], [button2],
                                                  [button3], [button4],
                                                  [button5], [button6],
@@ -98,13 +98,13 @@ class AdminExec:
             if val[0] == '/':
                 text = val[1:]
                 self.command = text.split()[0]
-                if self.command in ['show_friend', 'show_claimants', 'test',
-                                    'delete_all', 'daily_stat']:
+                if self.command in ['показать_друга', 'показать_взыскателей', 'help',
+                                    'удалить_всех', 'статистика']:
                     make_cmd(cmd=self.command)
                     keyboard_send(admin_cid)
                 else:
                     self.state = 1
-                    if (self.command == 'refresh_friend') and (Friend.query.first()):
+                    if (self.command == 'обновить_друга') and (Friend.query.first()):
                         bot.sendMessage(chat_id=admin_cid,
                                         text='Напоминаю, что старый юзернейм друга перезапишется новым. Введите, пожалуйста, новый юзернейм пользователя.')
                     else:
@@ -125,7 +125,7 @@ def make_cmd(cmd=None, name=None):
     app.logger.info(f'Command: {cmd}')
     need_update = False
 
-    if (cmd == 'refresh_friend') and name:
+    if (cmd == 'обновить_друга') and name:
         app.logger.info(f'Adding friend...')
         f = Friend.query.first()
         if f:
@@ -135,7 +135,7 @@ def make_cmd(cmd=None, name=None):
         db.session.add(r)
         need_update = True
 
-    elif (cmd == 'add_claimant') and name:
+    elif (cmd == 'добавить_взыскателя') and name:
         app.logger.info(f'Adding claimant...')
         r = Claimant(name=str(name).lower())
         db.session.add(r)
@@ -148,7 +148,7 @@ def make_cmd(cmd=None, name=None):
     #     db.session.add(r)
     #     need_update = True
 
-    elif cmd == 'show_friend':
+    elif cmd == 'показать_друга':
         friend = Friend.query.first()
         if friend:
             text = friend.name
@@ -156,7 +156,7 @@ def make_cmd(cmd=None, name=None):
             text = 'No friend'
         bot.sendMessage(chat_id=admin_cid, text=text)
 
-    elif cmd == 'show_claimants':
+    elif cmd == 'показать_взыскателей':
         cs_raw = Claimant.query.all()
         cs = [x.name for x in cs_raw]
         if cs:
@@ -164,19 +164,32 @@ def make_cmd(cmd=None, name=None):
         else:
             bot.sendMessage(chat_id=admin_cid, text='No claimants')
 
-    elif cmd == 'test':
-        bot.sendMessage(chat_id=admin_cid, text='testing...')
+    elif cmd == 'help':
+        bot.sendMessage(chat_id=admin_cid, text='''Для настройки бота надо:
+
+Перед запуском приложения в файле config.py указать username админа бота, в формате без "@", либо же указать в переменной окружения 'ADMIN', пример "test_user0"
+Админ должен найти бота "ClaimantBot" и написать ему "/start", дождаться ответа бота со справкой.
+Админ с помощью команд "/обновить_друга" и "/добавить_взыскателя" может обновлять username друга и добавлять username взыскателей соответственно, например: нажать кнопку "/обновить_друга", дожидаемся ответа бота, отправляем username друга "test_user1"; нажать кнопку  "/добавить_взыскателя", дожидаемся ответа бота, отправляем username взыскателя "test_user2".
+После добавления друга командой "/обновить_друга" друг должен найти бота и отправить ему любое сообщение, бот ответит "Все готово!"
+После добавления взыскателей они должны найти бота, отправить ему сообщение, эти сообщения попадают к другу, друг может отвечать на них с помощью стандартного функционала телеграма "ответить".
+Для админа также существуют команды:
+
+/показать_друга - показывает username друга
+/показать_взыскателей - показывает username всех взыскателей
+/удалить_всех - удаляет username и друга, и всех взыскателей
+/удалить_взыскателя - удаляет username взыскателя, используется: нажатие кнопки команды, дожидаемся ответа бота, отправляем username взыскателя
+/статистика - показывает статистику использования бота''')
 
     elif cmd == 'test_cmd':
         return 'all is good'
 
-    elif cmd == 'delete_all':
+    elif cmd == 'удалить_всех':
         app.logger.info(f'Deleting all...')
         Friend.query.delete()
         Claimant.query.delete()
         need_update = True
 
-    elif (cmd == 'delete_claimant') and name:
+    elif (cmd == 'удалить_взыскателя') and name:
         app.logger.info(f'Deleting claimant...')
         app.logger.info(f'{name}')
         # b = Claimant.query.filter_by(name=str(name).lower()).first()
@@ -187,7 +200,7 @@ def make_cmd(cmd=None, name=None):
         Claimant.query.filter_by(name=str(name).lower()).delete()
         need_update = True
 
-    elif cmd == 'daily_stat':
+    elif cmd == 'статистика':
         b = datetime.now()
         count_today = Message.query.filter(
             Message.timestamp >= datetime(b.year, b.month, b.day))
@@ -223,7 +236,12 @@ def make_cmd(cmd=None, name=None):
 Сообщений за неделю от взыскателей: {claimant_last_7day}
 Сообщений за месяц от взыскателей: {claimant_last_30day}
 Всего сообщений: {count_all}
-Всего сообщений от взыскателей: {claimant_count_all}'''
+Всего сообщений от взыскателей: {claimant_count_all}\n'''
+
+        claimants = Claimant.query.all()
+        claimants = [str(cl.name).lower() for cl in claimants]
+        for cl in claimants:
+            resp += f'  {cl}: {Message.query.filter(Message.from_user == cl).count()} сообщений.'
 
         bot.sendMessage(chat_id=admin_cid, text=resp)
     else:
@@ -231,7 +249,7 @@ def make_cmd(cmd=None, name=None):
 
     if need_update:
         db.session.commit()
-        bot.sendMessage(chat_id=admin_cid, text='Done!')
+        bot.sendMessage(chat_id=admin_cid, text='Сделано!')
         app.logger.info(f'Successful db commit!')
 
 
@@ -264,7 +282,7 @@ def respond(update):
                 db.session.add(a)
                 db.session.commit()
 
-                bot.sendMessage(chat_id=message.chat.id, text='Start!')
+                bot.sendMessage(chat_id=message.chat.id, text='''Используй /help для описания возможных команд.''')
                 keyboard_send(message.chat.id)
                 # bot.sendMessage(chat_id=message.chat.id, text='Start!')
                 return 'ok'
