@@ -153,7 +153,7 @@ def make_cmd(cmd=None, name=None):
         if friend:
             text = friend.name
         else:
-            text = 'No friend'
+            text = 'Друг не настроен.'
         bot.sendMessage(chat_id=admin_cid, text=text)
 
     elif cmd == 'показать_взыскателей':
@@ -162,7 +162,7 @@ def make_cmd(cmd=None, name=None):
         if cs:
             bot.sendMessage(chat_id=admin_cid, text=(', '.join(cs)))
         else:
-            bot.sendMessage(chat_id=admin_cid, text='No claimants')
+            bot.sendMessage(chat_id=admin_cid, text='Нет взыскателей.')
 
     elif cmd == 'help':
         bot.sendMessage(chat_id=admin_cid, text='''Для настройки бота надо:
