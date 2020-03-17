@@ -242,10 +242,10 @@ def make_cmd(cmd=None, name=None):
         claimants = [str(cl.name).lower() for cl in claimants]
         for cl in claimants:
             base_query = Message.query.filter(Message.from_user == cl)
-            resp += f'  {cl}: {base_query.filter(Message.timestamp >= datetime(b.year, b.month, b.day)).count()} за день,\
-            {base_query.filter(Message.timestamp >= (b - timedelta(days=1))).count()} за сутки,\
-            {base_query.filter(Message.timestamp >= (datetime(b.year, b.month, b.day)) - timedelta(days=7)).count()} за неделю,\
-            {base_query.count()} сообщений всего.\n'
+            resp += f'  {cl}: {base_query.filter(Message.timestamp >= datetime(b.year, b.month, b.day)).count()} за день, \
+{base_query.filter(Message.timestamp >= (b - timedelta(days=1))).count()} за сутки, \
+{base_query.filter(Message.timestamp >= (datetime(b.year, b.month, b.day)) - timedelta(days=7)).count()} за неделю, \
+{base_query.count()} сообщений всего.\n'
 
         bot.sendMessage(chat_id=admin_cid, text=resp)
     else:
