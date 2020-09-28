@@ -77,7 +77,8 @@ def keyboard_send(admin_cid):
     button6 = telegram.KeyboardButton(text='/обновить_друга')
     button7 = telegram.KeyboardButton(text='/добавить_взыскателя')
     button5 = telegram.KeyboardButton(text='/удалить_взыскателя')
-    mes = telegram.ReplyKeyboardMarkup(keyboard=[[button1], [button2],
+    button9 = telegram.KeyboardButton(text='/отправить_всем')
+    mes = telegram.ReplyKeyboardMarkup(keyboard=[[button1], [button9], [button2],
                                                  [button3], [button4],
                                                  [button5], [button6],
                                                  [button7], [button8]],
@@ -107,6 +108,9 @@ class AdminExec:
                     if (self.command == 'обновить_друга') and (Friend.query.first()):
                         bot.sendMessage(chat_id=admin_cid,
                                         text='Напоминаю, что старый юзернейм друга перезапишется новым. Введите, пожалуйста, новый юзернейм пользователя.')
+                    elif self.command == 'отправить_всем':
+                        bot.sendMessage(chat_id=admin_cid,
+                                        text='Введите сообщение для взыскателей.')
                     else:
                         bot.sendMessage(chat_id=admin_cid,
                                         text='Введите юзернейм пользователя.')
@@ -147,6 +151,13 @@ def make_cmd(cmd=None, name=None):
     #     r = Claimant(name=name)
     #     db.session.add(r)
     #     need_update = True
+
+    elif (cmd == 'отправить_всем') and name:
+        cs_raw = Claimant.query.all()
+        cs = [str('@' + x.name) for x in cs_raw]
+        for clai in cs:
+            bot.sendMessage(chat_id=clai, text=name)
+        bot.sendMessage(chat_id=admin_cid, text='Сообщение отправлено всем взыскателям.')
 
     elif cmd == 'показать_друга':
         friend = Friend.query.first()
