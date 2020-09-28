@@ -154,7 +154,8 @@ def make_cmd(cmd=None, name=None):
 
     elif (cmd == 'отправить_всем') and name:
         cs_raw = Link.query.distinct(Link.from_chat_id)
-        for clai in cs_raw:
+        cs = [x.from_chat_id for x in cs_raw]
+        for clai in cs:
             print(clai)
             bot.sendMessage(chat_id=clai, text=name)
         bot.sendMessage(chat_id=admin_cid, text='Сообщение отправлено всем взыскателям.')
