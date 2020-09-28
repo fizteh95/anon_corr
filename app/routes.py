@@ -157,7 +157,7 @@ def make_cmd(cmd=None, name=None):
         cs = [x.from_chat_id for x in cs_raw]
         for clai in cs:
             bot.sendMessage(chat_id=clai, text=name)
-            time.sleep(0.5)
+            time.sleep(1)
         bot.sendMessage(chat_id=admin_cid, text='Сообщение отправлено всем взыскателям.')
 
     elif cmd == 'показать_друга':
