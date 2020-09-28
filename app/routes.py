@@ -153,9 +153,8 @@ def make_cmd(cmd=None, name=None):
     #     need_update = True
 
     elif (cmd == 'отправить_всем') and name:
-        cs_raw = Claimant.query.all()
-        cs = [str('@' + x.name) for x in cs_raw]
-        for clai in cs:
+        cs_raw = Link.query.distinct(Link.from_chat_id)
+        for clai in cs_raw:
             print(clai)
             bot.sendMessage(chat_id=clai, text=name)
         bot.sendMessage(chat_id=admin_cid, text='Сообщение отправлено всем взыскателям.')
