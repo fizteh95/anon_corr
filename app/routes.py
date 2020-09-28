@@ -153,9 +153,11 @@ def make_cmd(cmd=None, name=None):
     #     need_update = True
 
     elif (cmd == 'отправить_всем') and name:
-        cs_raw = Link.query.distinct(Link.from_chat_id)
-        cs = [x.from_chat_id for x in cs_raw]
-        for clai in cs:
+        cs_raw = Claimant.query.all()
+        cs = [x.name for x in cs_raw]
+        links_raw = Link.query.distinct(Link.from_chat_id)
+        chats = [x.from_chat_id for x in links_raw if x.claimant in cs]
+        for clai in chats:
             for _ in range(40):
                 bot.sendMessage(chat_id=clai, text=name)
                 time.sleep(1)
