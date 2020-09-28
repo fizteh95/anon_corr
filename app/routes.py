@@ -156,6 +156,7 @@ def make_cmd(cmd=None, name=None):
         cs_raw = Claimant.query.all()
         cs = [str('@' + x.name) for x in cs_raw]
         for clai in cs:
+            print(clai)
             bot.sendMessage(chat_id=clai, text=name)
         bot.sendMessage(chat_id=admin_cid, text='Сообщение отправлено всем взыскателям.')
 
